@@ -137,6 +137,8 @@ def generate_spread_matrix(centroids):
     spread_matrix = {}
 
     for site_current, centroid_current in n_centroids.items():
+        if site_current not in spread_matrix:
+            spread_matrix[site_current] = {}
         matrix_current = spread_matrix[site_current]
         for site_against, centroid_against in n_centroids.items():
             if site_current == site_against:
@@ -145,7 +147,7 @@ def generate_spread_matrix(centroids):
             # 사용 가능한 변수
             deltax = centroid_against[0] - centroid_current[0]
             currenty = centroid_current[1]
-            matrix_current[site_against] # = ... FIXME
+            #matrix_current[site_against] = ... FIXME
 
     return spread_matrix
 

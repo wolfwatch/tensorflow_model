@@ -127,7 +127,27 @@ plt.show()
 
 def generate_spread_matrix(centroids):
     # centroids: { 'col1': [[0, 0], [0, 0], ...], 'col2': [[0, 0], [0, 0], ...], ... }
-    return None
+    
+    # 이 함수에서 사용할 centroid 값 딕셔너리
+    n_centroids = {}
+    # 처음과 마지막 centroid 제거 (부정확)
+    for k, v in centroids.items():
+        n_centroids[k] = v[1:-1]
+    
+    spread_matrix = {}
+
+    for site_current, centroid_current in n_centroids.items():
+        matrix_current = spread_matrix[site_current]
+        for site_against, centroid_against in n_centroids.items():
+            if site_current == site_against:
+                matrix_current[site_against] = 0
+                continue
+            # 사용 가능한 변수
+            deltax = centroid_against[0] - centroid_current[0]
+            currenty = centroid_current[1]
+            matrix_current[site_against] # = ... FIXME
+
+    return spread_matrix
 
 # 확산 행렬 생성
 spread_matrix = generate_spread_matrix(final_centroids)

@@ -8,32 +8,35 @@ import math
 
 plt.rc('font', family='Malgun Gothic')
 
-# load csv
+# csv 읽기
 df = pd.read_csv('./sum/워라벨_sum.csv', parse_dates=[0], dtype=np.float64)
 
-# normalized data { 'col1': [[0, 0], [0.2, 0.2], ...], 'col2': [[], [], ...], ... }
+# 정규화된 데이터를 저장할 딕셔너리
+# { 'col1': [[0, 0], [0.2, 0.2], ...], 'col2': [[], [], ...], ... }
 normalized_data = {}
-# tensor for each columns { 'col1': [update_centroids, centroids, points, assignments], 'col2': [], ... }
+# 각 칼럼(사이트)별로 실행할 텐서를 저장할 딕셔너리
+# { 'col1': [update_centroids, centroids, points, assignments], 'col2': [], ... }
 col_tensors = {}
 
-# initial centroids
+# 초기 centroid 값들
 raw_centroids = [[0, 0], [0.25, 0], [0.5, 0.125], [0.75, 0.5], [1, 1]]
+# 시험용
 #raw_centroids = [[0, 0], [0.1, 0.1], [0.2, 0.2], [0.3, 0.3], [0.4, 0.4], [0.5, 0.5], [0.6, 0.6], [0.7, 0.7], [0.8, 0.8], [0.9, 0.9]]
 
-# for each columns (without date)
+# 기간을 제외한 각 칼럼별로
 for coln in df.columns[1:]:
-    col = df[coln]              # loaded column
-    ncol = []                   # normalized column
-    maxv = col[len(col) - 1]    # maximum value of columns (TODO: probably problematic)
+    col = df[coln]              # csv에서 읽어온 칼럼
+    ncol = []                   # 정규화된 칼럼
+    maxv = col[len(col) - 1]    # 각 칼럼의 최대값 (TODO: 틀릴수도 있음)
 
-    # normalize
+    # 정규화
     if maxv == 0:
-        # if maximum value is 0, pretend it is 1 (preventing divide-by-zero)
+        # 칼럼의 최대값이 0일 경우 0으로 나누기를 피하기 위해 1로 변경
         maxv = 1
     for i in range(len(col)):
-        # add normalized col value into ncol
+        # 정규화된 사용량 데이터를 ncol에 추가
         #ncol.append([i / (len(col) - 1), col[i] / maxv])
-        # make value smooth
+        # 앞뒤값과 평균 내서 부드럽게
         if i == 0:
             ncol.append([i / (len(col) - 1), (col[i] + col[i + 1]) / 2 / maxv])
         elif i == len(col) - 1:
@@ -41,10 +44,10 @@ for coln in df.columns[1:]:
         else:
             ncol.append([i / (len(col) - 1), (col[i - 1] + col[i] + col[i + 1]) / 3 / maxv])
     
-    # add ncol to normalized columns
+    # 만들어진 ncol을 normalized_data에 저장
     normalized_data[coln] = ncol
 
-    # create tensors
+    # 텐서 생성
     points = tf.constant(ncol, dtype=np.float64)
     centroids = tf.Variable(raw_centroids, dtype=np.float64)
 
@@ -67,19 +70,22 @@ for coln in df.columns[1:]:
     new_centroids = tf.concat(means, 0)
     update_centroids = tf.assign(centroids, new_centroids)
 
-    # add columns' tensors to col_tensors
+    # 만들어진 칼럼 텐서들을 col_tensors에 저장
     col_tensors[coln] = [update_centroids, centroids, points, assignments]
 
+# 세션 실행 후 최종 centroid 값들을 저장할 딕셔너리
+# { 'col1': [[0, 0], [0, 0], ...], 'col2': [[0, 0], [0, 0], ...], ... }
+final_centroids = {}
+
 with tf.Session() as sess:
-    # init session
+    # 세션 초기화
     sess.run(tf.global_variables_initializer())
-    for coln, col_ten in col_tensors.items():   # run session per column
-        for step in range(100): # number of iterations
-            # run session
+    for coln, col_ten in col_tensors.items():   # 클러스터링을 칼럼별로 수행
+        for step in range(100): # 반복 횟수
+            # 세션 수행
             [_, col_centroid_values, col_points_values, col_assignment_values] = sess.run(col_ten)
         
-        # filtering code, useless for now
-        '''
+        # 현재 칼럼에서 클러스터링이 올바르게 수행되었는지 확인
         state = {}
         for i in range(len(raw_centroids)):
             state[i] = []
@@ -92,31 +98,36 @@ with tf.Session() as sess:
                 state_invalid = True
                 break
         
-        if state_invalid == True:
-            print(coln)
-            print('invalid state')
-        else:
-            print(coln)
-            for k, v in state.items():
-                print('cluster ' + str(k) + ': ' + str(math.floor(min(v) * len(col_points_values))) + ' ~ ' + str(math.floor(max(v) * len(col_points_values))))
-                plt.scatter(col_points_values[:, 0], col_points_values[:, 1], c=col_assignment_values, s=50, alpha=0.5)
-                plt.plot(col_centroid_values[:, 0], col_centroid_values[:, 1], 'kx', markersize=10)
-        '''
-        
-        # plot result data
-        plt.scatter(col_points_values[:, 0], col_points_values[:, 1], c=col_assignment_values, s=50, alpha=0.5)
-        plt.plot(col_centroid_values[:, 0], col_centroid_values[:, 1], 'kx', markersize=10)
+        # 클러스터링이 올바르게 수행되지 않았을 경우 현재 칼럼을 저장하지 않음
+        if state_invalid == False:
+            # 현재 칼럼의 최종 centroid 값을 저장할 배열 생성
+            final_centroids[coln] = []
 
-        # BEGIN show data per column (uncomment to use)
-        #for i in raw_centroids:
-        #    plt.plot(i[0], i[1], 'rx', markersize=10)
-        #plt.title(coln)
-        #plt.show()
-        #plt.clf()
-        # END show data per column
+            # 최종 centroid 값 저장
+            for i in col_centroid_values:
+                final_centroids[coln].append(i)
+    
+            # 데이터 plot하기
+            plt.scatter(col_points_values[:, 0], col_points_values[:, 1], c=col_assignment_values, s=50, alpha=0.5)
+            plt.plot(col_centroid_values[:, 0], col_centroid_values[:, 1], 'kx', markersize=10)
 
-# BEGIN show total data (per column code must be commented out)
+            # BEGIN 그래프 칼럼별로 보기 (주석 해제하여 사용)
+            #for i in raw_centroids:
+            #    plt.plot(i[0], i[1], 'rx', markersize=10)
+            #plt.title(coln)
+            #plt.show()
+            #plt.clf()
+            # END 그래프 칼럼별로 보기
+
+# BEGIN 전체 그래프 보기 (칼럼별로 보기 부분 주석 처리 필수)
 for i in raw_centroids:
     plt.plot(i[0], i[1], 'rx', markersize=10)
 plt.show()
-# END show total data
+# END 전체 그래프 보기
+
+def generate_spread_matrix(centroids):
+    # centroids: { 'col1': [[0, 0], [0, 0], ...], 'col2': [[0, 0], [0, 0], ...], ... }
+    return None
+
+# 확산 행렬 생성
+spread_matrix = generate_spread_matrix(final_centroids)

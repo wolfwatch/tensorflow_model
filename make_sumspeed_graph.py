@@ -86,4 +86,3 @@ make_ss_list()
 print("사이트 리스트")
 print(header)
 make_ss_graph()
-

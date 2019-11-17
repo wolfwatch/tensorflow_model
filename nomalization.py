@@ -28,11 +28,12 @@ def graph(word):
 
     normalized_data = {}
     for coln in df.columns[1:]:
-
         col = df[coln]  # csv에서 읽어온 칼럼
         ncol = []  # 정규화된 칼럼
         maxv = col[len(col) - 1]  # 각 칼럼의 최대값 (TODO: 틀릴수도 있음)
-
+        variance = np.var(col.values) #추가 #분산 구하기
+        print(np.log(variance+1))
+       # print(type(variance.dtype))
         # 정규화
         if maxv == 0:
             # 칼럼의 최대값이 0일 경우 0으로 나누기를 피하기 위해 1로 변경
@@ -41,12 +42,19 @@ def graph(word):
             # 정규화된 사용량 데이터를 ncol에 추가
             # ncol.append([i / (len(col) - 1), col[i] / maxv])
             # 앞뒤값과 평균 내서 부드럽게
+
             if i == 0:
-                ncol.append((col[i] + col[i + 1]) / 2 / maxv)
+                #ncol.append(col[i] / maxv)
+                ncol.append((col[i]/maxv)*np.log(variance+1))
+                #ncol.append((col[i] + col[i + 1]) / 2 / maxv)
             elif i == len(col) - 1:
-                ncol.append((col[i - 1] + col[i]) / 2 / maxv)
+                # ncol.append(col[i] / maxv)
+                ncol.append((col[i] / maxv) * np.log(variance+1))
+                #ncol.append((col[i - 1] + col[i]) / 2 / maxv)
             else:
-                ncol.append((col[i - 1] + col[i] + col[i + 1]) / 3 / maxv)
+                #ncol.append(col[i] / maxv)
+                ncol.append((col[i] / maxv) * np.log(variance+1))
+                #ncol.append((col[i - 1] + col[i] + col[i + 1]) / 3 / maxv)
 
         # 만들어진 ncol을 normalized_data에 저장
         normalized_data[coln] = ncol
@@ -60,7 +68,6 @@ def graph(word):
 
 # 읽을 단어 목록
 word_list = ["따흐흑", "뚝배기", "실화냐", "팩폭","혼모노"]
-
 for word in word_list:
     graph(word)
 

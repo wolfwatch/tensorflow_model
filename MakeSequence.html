@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.tymeleaf.org" lang="ko" class="" >
+<meta charset="utf-8">
+<style>
+    .link {
+        fill: none;
+        stroke: #666;
+        stroke-width: 1.5px;
+    }
+
+    #licensing {
+        fill: green;
+    }
+
+    .link.licensing {
+        stroke: green;
+    }
+
+    .link.resolved {
+        stroke-dasharray: 0, 2, 1;
+    }
+
+    circle {
+        stroke: #333;
+        stroke-width: 1.5px;
+    }
+
+    text {
+        font: 10px sans-serif;
+        pointer-events: none;
+        text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+    }
+
+    @font-face {
+        font-family: 'overwatch';
+        src: url('fonts/koverwatch.ttf');
+    }
+</style>
+
+<body bgcolor="#6A9EA5">
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+<script>
+    // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
+
+    var link2 = [];
+    $.ajax({
+        url: "seq/spread.json", //silhwa.json
+        dataType: "json",
+        async: false,
+        success: function(data){
+            //link2 = data.seq;
+            link2 = data.links;
+            console.log(link2);
+            //console.log(link2.length); // 몇개의 노드가 있는지
+        }
+    });
+
+    //console.log(link2);
+    //console.log(links);
+
+    var nodes = {};
+
+    // Compute the distinct nodes from the links.
+    link2.forEach(function(link) {
+        link.source = nodes[link.source] || (nodes[link.source] = {
+            name: link.source
+        });
+        link.target = nodes[link.target] || (nodes[link.target] = {
+            name: link.target
+        });
+    });
+
+    var width = 1800,
+        height = 1790;
+
+    //그룹에 따라 달라지는 color를 리턴하는 모듈
+    var color = function (gravity) {
+
+        if (gravity >= 0.1) {
+            return "#fbc280"
+        } else if (gravity > 0.001) {
+            return "#aaa"
+        } else {
+            return "#405275"
+        }
+
+        // if (type == "licensing") {
+        //     return "#fbc280"
+        // } else if (type == "suit") {
+        //     return "#aaa"
+        // } else {
+        //     return "#405275"
+        // }
+    };
+
+    var force = d3.layout.force()
+        .nodes(d3.values(nodes))
+        .links(link2)
+        .size([width, height])
+        .linkDistance(230)
+        .charge(-900)
+        .on("tick", tick)
+        .start();
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // Per-type markers, as they don't inherit styles.
+    var arrow = svg.append("defs").selectAll("marker")
+        .data(["suit", "licensing", "resolved"])
+        .enter().append("marker")
+        .attr("id", function(d) {
+            return d;
+        })
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 20)
+        .attr("refY", -1.5)
+        .attr("markerWidth", 10)
+        .attr("markerHeight", 10)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5");
+
+    var path = svg.append("g").selectAll("path")
+        .data(force.links())
+        .enter().append("path")
+        .attr("class", function(d) {
+            return "link " + d.type;
+        })
+        .attr("marker-end", function(d) {
+            return "url(#" + d.type + ")";
+        });
+
+    //노드 선언 구현부분
+    var circle = svg.append("g").selectAll("circle")
+        .data(force.nodes())
+        .enter().append("circle")
+        .attr("r", 15)
+        .call(force.drag)
+        .attr('fill', function (d) {
+        return color(d.type);
+    });
+
+    //마우스를 노드에 올릴시
+    circle.on("mouseover", function(d){
+        path.style('stroke-opacity', function(l) {
+        if (d === l.source)
+            return 1;
+        else
+            return 0.05;
+    })
+    }).on("mouseout", function(d){
+        path.style("stroke-opacity", 1)
+    });
+
+    var text = svg.append("g").selectAll("text")
+        .data(force.nodes())
+        .enter().append("text")
+        .attr("x", -18)
+        .attr("y", 8)
+        .style("font-family", "overwatch")
+        .style("font-size", "18px")
+        .text(function(d) {
+            return d.name;
+        });
+
+    // Use elliptical arc path segments to doubly-encode directionality.
+    function tick() {
+        path.attr("d", linkArc);
+        circle.attr("transform", transform);
+        text.attr("transform", transform);
+    }
+
+    function linkArc(d) {
+        var dx = d.target.x - d.source.x,
+            dy = d.target.y - d.source.y,
+            dr = Math.sqrt(dx * dx + dy * dy);
+        return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+    }
+
+    function transform(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+    }
+</script>
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+{
+  "word" : "실화냐",
+  "seq": [
+    {
+      "source": "일베",
+      "target": "아프리카",
+      "type": "licensing"
+    },
+    {
+      "source": "일베",
+      "target": "개그콘서트",
+      "type": "licensing"
+    },
+    {
+      "source": "일베",
+      "target": "인벤",
+      "type": "licensing"
+    },
+    {
+      "source": "일베",
+      "target": "트위터",
+      "type": "licensing"
+    },
+    {
+      "source": "아프리카",
+      "target": "인벤",
+      "type": "resolved"
+    },
+    {
+      "source": "아프리카",
+      "target": "도탁스",
+      "type": "suit"
+    },
+    {
+      "source": "아프리카",
+      "target": "오유",
+      "type": "suit"
+    },
+    {
+      "source": "아프리카",
+      "target": "트위터",
+      "type": "suit"
+    },
+    {
+      "source": "아프리카",
+      "target": "여성시대",
+      "type": "suit"
+    },
+    {
+      "source": "인벤",
+      "target": "도탁스",
+      "type": "suit"
+    },
+    {
+      "source": "인벤",
+      "target": "오유",
+      "type": "suit"
+    },
+    {
+      "source": "인벤",
+      "target": "트위터",
+      "type": "suit"
+    },
+    {
+      "source": "인벤",
+      "target": "여성시대",
+      "type": "resolved"
+    },
+    {
+      "source": "도탁스",
+      "target": "웃긴대학",
+      "type": "resolved"
+    },
+    {
+      "source": "트위터",
+      "target": "여성시대",
+      "type": "suit"
+    },
+    {
+      "source": "트위터",
+      "target": "인스티즈",
+      "type": "suit"
+    },
+    {
+      "source": "트위터",
+      "target": "네이트판",
+      "type": "resolved"
+    },
+    {
+      "source": "트위터",
+      "target": "웃긴대학",
+      "type": "resolved"
+    },
+    {
+      "source": "트위터",
+      "target": "이종격투기",
+      "type": "resolved"
+    },
+    {
+      "source": "개그콘서트",
+      "target": "인벤",
+      "type": "licensing"
+    },
+    {
+      "source": "개그콘서트",
+      "target": "아프리카",
+      "type": "licensing"
+    },
+    {
+      "source": "개그콘서트",
+      "target": "도탁스",
+      "type": "licensing"
+    },
+    {
+      "source": "개그콘서트",
+      "target": "오유",
+      "type": "licensing"
+    },
+    {
+      "source": "개그콘서트",
+      "target": "트위터",
+      "type": "licensing"
+    },
+    {
+      "source": "개그콘서트",
+      "target": "여성시대",
+      "type": "licensing"
+    },
+    {
+      "source": "개그콘서트",
+      "target": "웃긴대학",
+      "type": "licensing"
+    },
+    {
+      "source": "인스티즈",
+      "target": "트위터",
+      "type": "resolved"
+    },
+    {
+      "source": "네이트판",
+      "target": "여성시대",
+      "type": "suit"
+    },
+    {
+      "source": "여성시대",
+      "target": "네이트판",
+      "type": "suit"
+    },
+    {
+      "source": "여성시대",
+      "target": "인스티즈",
+      "type": "suit"
+    },
+    {
+      "source": "여성시대",
+      "target": "웃긴대학",
+      "type": "suit"
+    }
+  ]
+}

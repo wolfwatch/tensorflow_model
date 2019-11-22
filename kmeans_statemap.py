@@ -232,4 +232,4 @@ for site_current, sites_against in spread_matrix.items():
         d3v['links'].append(l)
 
 with open('spread.json', 'w') as fp:
-    json.dump(d3v, fp, ensure_ascii=False, indent=4)
+    json.dump(spread_matrix, fp, ensure_ascii=False, indent=4)

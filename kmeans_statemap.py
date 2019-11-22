@@ -5,6 +5,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import math
+import json
 
 plt.rc('font', family='Malgun Gothic')
 
@@ -81,7 +82,7 @@ with tf.Session() as sess:
     # 세션 초기화
     sess.run(tf.global_variables_initializer())
     for coln, col_ten in col_tensors.items():   # 클러스터링을 칼럼별로 수행
-        for step in range(100): # 반복 횟수
+        for step in range(5): # 반복 횟수
             # 세션 수행
             [_, col_centroid_values, col_points_values, col_assignment_values] = sess.run(col_ten)
         
@@ -111,7 +112,7 @@ with tf.Session() as sess:
             plt.scatter(col_points_values[:, 0], col_points_values[:, 1], c=col_assignment_values, s=50, alpha=0.5)
             plt.plot(col_centroid_values[:, 0], col_centroid_values[:, 1], 'kx', markersize=10)
 
-            # BEGIN 그래프 칼럼별로 보기 (주석 해제하여 사용)
+            # BEGIN 그래프 칼럼별로 보기
             #for i in raw_centroids:
             #    plt.plot(i[0], i[1], 'rx', markersize=10)
             #plt.title(coln)
@@ -119,37 +120,77 @@ with tf.Session() as sess:
             #plt.clf()
             # END 그래프 칼럼별로 보기
 
-# BEGIN 전체 그래프 보기 (칼럼별로 보기 부분 주석 처리 필수)
-for i in raw_centroids:
-    plt.plot(i[0], i[1], 'rx', markersize=10)
-plt.show()
+# BEGIN 전체 그래프 보기
+#for i in raw_centroids:
+#    plt.plot(i[0], i[1], 'rx', markersize=10)
+#plt.show()
 # END 전체 그래프 보기
 
 def generate_spread_matrix(centroids):
     # centroids: { 'col1': [[0, 0], [0, 0], ...], 'col2': [[0, 0], [0, 0], ...], ... }
-    
-    # 이 함수에서 사용할 centroid 값 딕셔너리
+
     n_centroids = {}
     # 처음과 마지막 centroid 제거 (부정확)
     for k, v in centroids.items():
         n_centroids[k] = v[1:-1]
+    centroids = n_centroids
+
+    # centroid를 cluster별로 정렬
+
+    centroids_by_cluster = []
+    for i in range(len(raw_centroids) - 2):
+        this_cent = {}
+        for site, cents in centroids.items():
+            this_cent[site] = cents[i]
+        centroids_by_cluster.append(this_cent)
     
+    # 각 cluster별 y최소, y최대, x최소, x최대값 구하기
+
+    clusters_bound = []     # (bottom, top, left, right)
+
+    for cluster in centroids_by_cluster:
+        cluster_bound = [1, 0, 1, 0]
+        for site, cent in cluster.items():
+            if cluster_bound[0] > cent[1]: cluster_bound[0] = cent[1]
+            if cluster_bound[1] < cent[1]: cluster_bound[1] = cent[1]
+            if cluster_bound[2] > cent[0]: cluster_bound[2] = cent[0]
+            if cluster_bound[3] < cent[0]: cluster_bound[3] = cent[0]
+        clusters_bound.append(cluster_bound)
+
+    # 영향력 계산
+    # cluster bound가 (0, 0)~(1, 1)일때 bound 내의 사이트 a(ax, ay), 사이트 b(bx, by)에 대해 a → b 영향력:
+    # ax <= bx일 때 ((1 - (bx - ax)) * ay)
+    # ax > bx일 때 0
+
     spread_matrix = {}
 
-    for site_current, centroid_current in n_centroids.items():
-        if site_current not in spread_matrix:
-            spread_matrix[site_current] = {}
-        matrix_current = spread_matrix[site_current]
-        for site_against, centroid_against in n_centroids.items():
-            if site_current == site_against:
-                matrix_current[site_against] = 0
-                continue
-            # 사용 가능한 변수
-            deltax = centroid_against[0] - centroid_current[0]
-            currenty = centroid_current[1]
-            #matrix_current[site_against] = ... FIXME
+    for i in range(len(raw_centroids) - 2):
+        this_cluster = centroids_by_cluster[i]
+        cluster_bound = clusters_bound[i]
+        for site_current, cent_current in this_cluster.items():
+            for site_against, cent_against in this_cluster.items():
+                if site_current == site_against: continue
+                if cent_current[0] >= cent_against[0]: continue
+                ax = (cent_current[0] - cluster_bound[2]) / (cluster_bound[3] - cluster_bound[2])
+                bx = (cent_against[0] - cluster_bound[2]) / (cluster_bound[3] - cluster_bound[2])
+                ay = (cent_current[1] - cluster_bound[0]) / (cluster_bound[1] - cluster_bound[0])
+                influence = ((1 - (bx - ax)) * ay)
+                if site_current not in spread_matrix: spread_matrix[site_current] = {}
+                if site_against not in spread_matrix[site_current]:
+                    spread_matrix[site_current][site_against] = influence
+                else:
+                    spread_matrix[site_current][site_against] += influence
+
+    dv = len(raw_centroids) - 2
+
+    for site_current, sites_against in spread_matrix.items():
+        for s, v in sites_against.items():
+            spread_matrix[site_current][s] = v / dv
 
     return spread_matrix
 
 # 확산 행렬 생성
 spread_matrix = generate_spread_matrix(final_centroids)
+
+with open('spread.json', 'w') as fp:
+    json.dump(spread_matrix, fp, ensure_ascii=False, indent=4)

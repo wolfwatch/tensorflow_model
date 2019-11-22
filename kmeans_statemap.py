@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+from collections import OrderedDict
 import math
 import json
 
@@ -82,7 +83,7 @@ with tf.Session() as sess:
     # 세션 초기화
     sess.run(tf.global_variables_initializer())
     for coln, col_ten in col_tensors.items():   # 클러스터링을 칼럼별로 수행
-        for step in range(5): # 반복 횟수
+        for step in range(30): # 반복 횟수
             # 세션 수행
             [_, col_centroid_values, col_points_values, col_assignment_values] = sess.run(col_ten)
         
@@ -162,7 +163,7 @@ def generate_spread_matrix(centroids):
     # ax <= bx일 때 ((1 - (bx - ax)) * ay)
     # ax > bx일 때 0
 
-    spread_matrix = {}
+    spread_matrix = OrderedDict()
 
     for i in range(len(raw_centroids) - 2):
         this_cluster = centroids_by_cluster[i]
@@ -175,7 +176,7 @@ def generate_spread_matrix(centroids):
                 bx = (cent_against[0] - cluster_bound[2]) / (cluster_bound[3] - cluster_bound[2])
                 ay = (cent_current[1] - cluster_bound[0]) / (cluster_bound[1] - cluster_bound[0])
                 influence = ((1 - (bx - ax)) * ay)
-                if site_current not in spread_matrix: spread_matrix[site_current] = {}
+                if site_current not in spread_matrix: spread_matrix[site_current] = OrderedDict()
                 if site_against not in spread_matrix[site_current]:
                     spread_matrix[site_current][site_against] = influence
                 else:
@@ -192,5 +193,43 @@ def generate_spread_matrix(centroids):
 # 확산 행렬 생성
 spread_matrix = generate_spread_matrix(final_centroids)
 
+d3v = {}
+d3v['nodes'] = []
+d3v['links'] = []
+
+idnm = []
+
+i = 1
+for coln in df.columns[1:]:
+    n = {}
+    n['id'] = i
+    n['name'] = coln
+    i += 1
+    idnm.append(n)
+    n = {}
+    n['name'] = coln
+    n['group'] = 1
+    d3v['nodes'].append(n)
+
+for site_current, sites_against in spread_matrix.items():
+    for s, v in sites_against.items():
+        if v == 0: continue
+        l = {}
+        isrc = -1
+        for i in idnm:
+            if i['name'] == site_current:
+                isrc = i['id']
+                break
+        l['source'] = isrc
+        itar = -1
+        for i in idnm:
+            if i['name'] == s:
+                itar = i['id']
+                break
+        l['target'] = itar
+        l['gravity'] = v
+        if isrc == -1 or itar == -1: continue
+        d3v['links'].append(l)
+
 with open('spread.json', 'w') as fp:
-    json.dump(spread_matrix, fp, ensure_ascii=False, indent=4)
+    json.dump(d3v, fp, ensure_ascii=False, indent=4)

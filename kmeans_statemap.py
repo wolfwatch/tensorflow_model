@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict
 import math
 import json
+import copy
 
 plt.rc('font', family='Malgun Gothic')
 
@@ -127,14 +128,47 @@ with tf.Session() as sess:
 #plt.show()
 # END 전체 그래프 보기
 
+n_centroids = {}
+# 처음과 마지막 centroid 제거 (부정확)
+for k, v in final_centroids.items():
+    n_centroids[k] = v[1:-1]
+final_centroids = n_centroids
+
+def generate_rank(centroids, by):
+    if by != "x" and by != "y": return None
+    centroids_by_cluster = []
+    for i in range(len(raw_centroids) - 2):
+        this_cent = {}
+        for site, cents in centroids.items():
+            this_cent[site] = cents[i]
+        centroids_by_cluster.append(this_cent)
+    
+    score = {}
+
+    for cluster in centroids_by_cluster:
+        ca = []
+        for k, v in cluster.items():
+            ca.append([k, v[0], v[1]])
+        if by == "x": ca.sort(key=lambda x: x[1])
+        elif by == "y": ca.sort(key=lambda x: x[2])
+        for i in range(len(ca)):
+            if ca[i][0] not in score: score[ca[i][0]] = 0
+            score[ca[i][0]] += len(ca) - i + 1
+
+    sa = []
+    for k, v in score.items():
+        sa.append([k, v])
+    
+    sa.sort(key=lambda x: x[1], reverse=True)
+
+    rank = []
+    for v in sa:
+        rank.append(v[0])
+
+    return rank
+
 def generate_spread_matrix(centroids):
     # centroids: { 'col1': [[0, 0], [0, 0], ...], 'col2': [[0, 0], [0, 0], ...], ... }
-
-    n_centroids = {}
-    # 처음과 마지막 centroid 제거 (부정확)
-    for k, v in centroids.items():
-        n_centroids[k] = v[1:-1]
-    centroids = n_centroids
 
     # centroid를 cluster별로 정렬
 
@@ -190,46 +224,49 @@ def generate_spread_matrix(centroids):
 
     return spread_matrix
 
+# 순위 계산
+time_rank = generate_rank(final_centroids, "x")
+influence_rank = generate_rank(final_centroids, "y")
+
+print("time_rank: ", end="")
+print(time_rank, end="\n\n")
+print("influence_rank: ", end="")
+print(influence_rank)
+
 # 확산 행렬 생성
 spread_matrix = generate_spread_matrix(final_centroids)
 
+# D3.js용 데이터 생성
 d3v = {}
 d3v['nodes'] = []
 d3v['links'] = []
 
-idnm = []
-
 i = 1
 for coln in df.columns[1:]:
     n = {}
-    n['id'] = i
-    n['name'] = coln
-    i += 1
-    idnm.append(n)
-    n = {}
-    n['name'] = coln
-    n['group'] = 1
+    n['id'] = coln
     d3v['nodes'].append(n)
+
+sites_with_node = []
 
 for site_current, sites_against in spread_matrix.items():
     for s, v in sites_against.items():
         if v == 0: continue
         l = {}
-        isrc = -1
-        for i in idnm:
-            if i['name'] == site_current:
-                isrc = i['id']
-                break
-        l['source'] = isrc
-        itar = -1
-        for i in idnm:
-            if i['name'] == s:
-                itar = i['id']
-                break
-        l['target'] = itar
-        l['gravity'] = v
-        if isrc == -1 or itar == -1: continue
+        l['source'] = site_current
+        l['target'] = s
+        l['value'] = v
+        if site_current not in sites_with_node: sites_with_node.append(site_current)
+        if s not in sites_with_node: sites_with_node.append(s)
         d3v['links'].append(l)
 
-with open('spread.json', 'w') as fp:
-    json.dump(spread_matrix, fp, ensure_ascii=False, indent=4)
+final_nodes = []
+for site in sites_with_node:
+    n = {}
+    n['id'] = site
+    final_nodes.append(n)
+
+# d3v['nodes'] = final_nodes
+
+with open('graph_dirty.json', 'w', encoding="utf-8") as fp:
+    json.dump(d3v, fp, ensure_ascii=False, indent=4)

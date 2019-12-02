@@ -1,0 +1,311 @@
+{
+    "nodes": [
+        {
+            "id": "lolkor"
+        },
+        {
+            "id": "directwedding"
+        },
+        {
+            "id": "다낭 고스트"
+        },
+        {
+            "id": "베나자"
+        },
+        {
+            "id": "맘이베베"
+        },
+        {
+            "id": "다낭 도깨비"
+        },
+        {
+            "id": "ILoveNBA"
+        },
+        {
+            "id": "창원 줌마렐라"
+        },
+        {
+            "id": "엽기 혹은 진실"
+        },
+        {
+            "id": "소주담"
+        }
+    ],
+    "links": [
+        {
+            "source": "lolkor",
+            "target": "directwedding",
+            "value": 0.5743038103553403
+        },
+        {
+            "source": "lolkor",
+            "target": "다낭 고스트",
+            "value": 0.6496735600480888
+        },
+        {
+            "source": "lolkor",
+            "target": "베나자",
+            "value": 0.6264704765568478
+        },
+        {
+            "source": "lolkor",
+            "target": "맘이베베",
+            "value": 0.5896129940983091
+        },
+        {
+            "source": "lolkor",
+            "target": "다낭 도깨비",
+            "value": 0.3409174102036149
+        },
+        {
+            "source": "lolkor",
+            "target": "ILoveNBA",
+            "value": 0.12096774193548385
+        },
+        {
+            "source": "맘이베베",
+            "target": "다낭 고스트",
+            "value": 0.07995549051662593
+        },
+        {
+            "source": "맘이베베",
+            "target": "베나자",
+            "value": 0.0722418327077041
+        },
+        {
+            "source": "directwedding",
+            "target": "다낭 고스트",
+            "value": 0.3623538535570845
+        },
+        {
+            "source": "directwedding",
+            "target": "베나자",
+            "value": 0.36273062270939826
+        },
+        {
+            "source": "directwedding",
+            "target": "lolkor",
+            "value": 0.16014190175563947
+        },
+        {
+            "source": "directwedding",
+            "target": "맘이베베",
+            "value": 0.3945808935536837
+        },
+        {
+            "source": "directwedding",
+            "target": "다낭 도깨비",
+            "value": 0.21981074559679248
+        },
+        {
+            "source": "directwedding",
+            "target": "ILoveNBA",
+            "value": 0.07147925040458947
+        },
+        {
+            "source": "다낭 도깨비",
+            "target": "lolkor",
+            "value": 0.22991036688714772
+        },
+        {
+            "source": "다낭 도깨비",
+            "target": "맘이베베",
+            "value": 0.3805915664178911
+        },
+        {
+            "source": "다낭 도깨비",
+            "target": "directwedding",
+            "value": 0.21699452724670182
+        },
+        {
+            "source": "다낭 도깨비",
+            "target": "다낭 고스트",
+            "value": 0.27991979229560526
+        },
+        {
+            "source": "다낭 도깨비",
+            "target": "베나자",
+            "value": 0.2893910236288641
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "lolkor",
+            "value": 0.17986986201938573
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "맘이베베",
+            "value": 0.163506152707758
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "directwedding",
+            "value": 0.17232703697249344
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "다낭 도깨비",
+            "value": 0.2561617908172354
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "다낭 고스트",
+            "value": 0.08193630548154285
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "베나자",
+            "value": 0.034470501973547944
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "ILoveNBA",
+            "value": 0.3284610276979322
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "엽기 혹은 진실",
+            "value": 0.20936064542802482
+        },
+        {
+            "source": "창원 줌마렐라",
+            "target": "소주담",
+            "value": 0.22000713243955997
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "lolkor",
+            "value": 0.20159419455160565
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "맘이베베",
+            "value": 0.16567402214760926
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "directwedding",
+            "value": 0.19139781209072995
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "다낭 도깨비",
+            "value": 0.27563721964045024
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "창원 줌마렐라",
+            "value": 0.1462771115565273
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "다낭 고스트",
+            "value": 0.07274568933300388
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "베나자",
+            "value": 0.0361921883562378
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "ILoveNBA",
+            "value": 0.35786165086122745
+        },
+        {
+            "source": "엽기 혹은 진실",
+            "target": "소주담",
+            "value": 0.36032913561937635
+        },
+        {
+            "source": "ILoveNBA",
+            "target": "lolkor",
+            "value": 0.22716724787151102
+        },
+        {
+            "source": "ILoveNBA",
+            "target": "맘이베베",
+            "value": 0.2763564230199135
+        },
+        {
+            "source": "ILoveNBA",
+            "target": "directwedding",
+            "value": 0.27498151098996776
+        },
+        {
+            "source": "ILoveNBA",
+            "target": "다낭 도깨비",
+            "value": 0.41138241439650336
+        },
+        {
+            "source": "ILoveNBA",
+            "target": "다낭 고스트",
+            "value": 0.17708684066044722
+        },
+        {
+            "source": "ILoveNBA",
+            "target": "베나자",
+            "value": 0.18528185023129976
+        },
+        {
+            "source": "ILoveNBA",
+            "target": "소주담",
+            "value": 0.12741288733791167
+        },
+        {
+            "source": "소주담",
+            "target": "lolkor",
+            "value": 0.219088462800723
+        },
+        {
+            "source": "소주담",
+            "target": "맘이베베",
+            "value": 0.1728234903743361
+        },
+        {
+            "source": "소주담",
+            "target": "directwedding",
+            "value": 0.2053442610681847
+        },
+        {
+            "source": "소주담",
+            "target": "다낭 도깨비",
+            "value": 0.2726046708871966
+        },
+        {
+            "source": "소주담",
+            "target": "창원 줌마렐라",
+            "value": 0.12652428677906177
+        },
+        {
+            "source": "소주담",
+            "target": "다낭 고스트",
+            "value": 0.09115635134151498
+        },
+        {
+            "source": "소주담",
+            "target": "베나자",
+            "value": 0.06207691122948768
+        },
+        {
+            "source": "소주담",
+            "target": "ILoveNBA",
+            "value": 0.24474627386910927
+        },
+        {
+            "source": "소주담",
+            "target": "엽기 혹은 진실",
+            "value": 0.04688353207746812
+        },
+        {
+            "source": "베나자",
+            "target": "다낭 고스트",
+            "value": 0.2181226966658807
+        },
+        {
+            "source": "베나자",
+            "target": "맘이베베",
+            "value": 0.1204386279158847
+        }
+    ]
+}

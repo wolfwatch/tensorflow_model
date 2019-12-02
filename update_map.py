@@ -3,10 +3,17 @@ from collections import OrderedDict
 
 import pandas as pd
 import numpy as np
+from urllib.parse import quote_plus
+import os
+from pymongo import MongoClient
 
-# world_map
-with open('./world_map.json', encoding='utf-8') as map_file:
-    data_map = json.load(map_file)
+
+# kmeans_statemap.py 에다 단어별 결과물을 받게끔 함
+def main(word):
+    # world_map을 업데이트
+    with open('./d3/world_map3.json', encoding='utf-8') as map_file:
+        data_map = json.load(map_file)
+
     print(data_map)
     # data_map['count'] = 0
     # data_map['links'] = []
@@ -21,8 +28,17 @@ with open('./world_map.json', encoding='utf-8') as map_file:
     # with open('world_map.json', 'w', encoding="utf-8") as fp:
     #     json.dump(data_map, fp, ensure_ascii=False, indent=4)
     # exit(1)
-    with open('./d3/data_dirty.json', encoding='utf-8') as data_file:
+    # csv 읽기
+
+    if not os.path.isfile("./seq2/" + word + "_seq.json"):
+        print(word + " file not exitst")
+        return
+    with open('./seq2/'+word+'_seq.json', encoding='utf-8') as data_file:
         data_now =json.load(data_file)
+        if len(data_now['nodes']) < 1:
+            return
+        elif len(data_now['nodes'][0]) < 1:
+            return
         print(data_now['nodes'])
         # 1. 현재 단어와 연관된 노드들 목록
         # 2. 노드들을 이용해서, 예)1번~10번 노드가 있을때
@@ -74,52 +90,26 @@ with open('./world_map.json', encoding='utf-8') as map_file:
                             print(data_map['links'][position])
                             break
 
-with open('./world_map.json', 'w',encoding='utf-8') as map_file:
-    count = data_map['count']
-    if count != 0:
-        for i in range(len(data_map["links"])):
-            weight = data_map['links'][i]['value']*(count/(count+1))
-            data_map['links'][i]['value'] = weight
+    with open('./d3/world_map3.json', 'w',encoding='utf-8') as map_file:
+        count = data_map['count']
+        if count != 0:
+            for i in range(len(data_map["links"])):
+                weight = data_map['links'][i]['value']*(count/(count+1))
+                data_map['links'][i]['value'] = weight
 
-    data_map['count'] += 1
+        data_map['count'] += 1
 
-    json.dump(data_map, map_file, ensure_ascii=False, indent=4)
-    print(data_map)
-    exit(1)
-
+        json.dump(data_map, map_file, ensure_ascii=False, indent=4)
+        print(data_map)
 
 
-# D3.js용 데이터 생성
-d3v = {}
-d3v['nodes'] = []
-d3v['links'] = []
+uri = "mongodb://%s:%s@%s" % (quote_plus("admin123"), quote_plus("1234"), "wolfwatch.dlinkddns.com:27017/admin")
+client = MongoClient(uri)
+db = client.crawler_db
+list_cursor = db.word_table.find({},{"_id": 0,"word": 1})
+for item in list_cursor:
+    word = item['word']
+    print(word)
+    main(word)
 
-i = 1
-for coln in df.columns[1:]:
-    n = {}
-    n['id'] = coln
-    d3v['nodes'].append(n)
-
-sites_with_node = []
-
-for site_current, sites_against in spread_matrix.items():
-    for s, v in sites_against.items():
-        if v == 0: continue
-        l = {}
-        l['source'] = site_current
-        l['target'] = s
-        l['value'] = v
-        if site_current not in sites_with_node: sites_with_node.append(site_current)
-        if s not in sites_with_node: sites_with_node.append(s)
-        d3v['links'].append(l)
-
-final_nodes = []
-for site in sites_with_node:
-    n = {}
-    n['id'] = site
-    final_nodes.append(n)
-
-# d3v['nodes'] = final_nodes
-
-with open('graph2.json', 'w', encoding="utf-8") as fp:
-    json.dump(d3v, fp, ensure_ascii=False, indent=4)
+exit(2)

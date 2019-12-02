@@ -78,10 +78,10 @@
                           .append("line")
                           .style("opacity", function(d) { return Math.pow(d.value, 2.718); })
                           .attr("stroke", function(d) {
-                              if (d.value > 600) return "#F00";
+                              if (d.value > 60) return "#F00";
                               else return "#000";
                           })
-                          .attr("stroke-width", function(d) { return d.value * 0.08; });
+                          .attr("stroke-width", function(d) { return d.value * 0.8; });
 
                 node = svg.append("g")
                           .attr("class", "nodes")

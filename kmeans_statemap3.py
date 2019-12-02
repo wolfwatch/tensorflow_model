@@ -3,13 +3,14 @@ import pandas as pd
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from pymongo import MongoClient
+
 from urllib.parse import quote_plus
 from collections import OrderedDict
 import math
 import json
 import copy
 import os
+from pymongo import MongoClient
 
 uri = "mongodb://%s:%s@%s" % (quote_plus("admin123"), quote_plus("1234"), "wolfwatch.dlinkddns.com:27017/admin")
 client = MongoClient(uri)
@@ -286,7 +287,7 @@ for item in list_cursor:
         final_nodes.append(n)
 
     # data 정리된 그래프 쓸땐 주석해제
-    d3v['nodes'] = final_nodes
+    # d3v['nodes'] = final_nodes
 
     with open('./seq/'+word+'_seq.json', 'w', encoding="utf-8") as fp:
         json.dump(d3v, fp, ensure_ascii=False, indent=4)

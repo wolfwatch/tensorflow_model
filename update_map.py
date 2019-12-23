@@ -1,8 +1,4 @@
 import json
-from collections import OrderedDict
-
-import pandas as pd
-import numpy as np
 from urllib.parse import quote_plus
 import os
 from pymongo import MongoClient

@@ -1,13 +1,13 @@
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-import matplotlib as mpl
+
 import matplotlib.pyplot as plt
 
 from collections import OrderedDict
-import math
+
 import json
-import copy
+
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.externals import joblib
 from urllib.parse import quote_plus
